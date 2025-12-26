@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Security Expert | BD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom Font Imports */
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* slate-900 */
+            color: #e2e8f0; /* slate-200 */
+        }
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Matrix Canvas */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.2;
+            z-index: 0;
+        }
+
+        /* Glitch Effect */
+        .glitch-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .glitch-clone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .group:hover .glitch-clone.red {
+            opacity: 0.7;
+            transform: translateX(2px);
+            color: #ef4444;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .group:hover .glitch-clone.cyan {
+            opacity: 0.7;
+            transform: translateX(-2px);
+            color: #06b6d4;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            animation-delay: 75ms;
+        }
+
+        /* Blinking Cursor */
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Selection Color */
+        ::selection {
+            background-color: #22c55e; /* green-500 */
+            color: #0f172a;
+        }
+
+        /* Scroll Reveal Utility Class */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-slate-900 min-h-screen relative overflow-x-hidden">
+
+    <!-- Matrix Background -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center cursor-pointer font-mono font-bold text-xl text-white">
+                    <i data-lucide="shield" class="w-6 h-6 text-green-500 mr-2"></i>
+                    <span class="tracking-tighter">SEC<span class="text-green-500">_</span>EXPERT<span class="text-red-500">.BD</span></span>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#about" class="text-gray-300 hover:text-green-400 hover:bg-green-500/10 px-3 py-2 rounded-md text-sm font-medium transition-colors font-mono">&lt;About/&gt;</a>
+                        <a href="#skills" class="text-gray-300 hover:text-green-400 hover:bg-green-500/10 px-3 py-2 rounded-md text-sm font-medium transition-colors font-mono">&lt;Skills/&gt;</a>
+                        <a href="#projects" class="text-gray-300 hover:text-green-400 hover:bg-green-500/10 px-3 py-2 rounded-md text-sm font-medium transition-colors font-mono">&lt;Projects/&gt;</a>
+                        <a href="#contact" class="text-gray-300 hover:text-green-400 hover:bg-green-500/10 px-3 py-2 rounded-md text-sm font-medium transition-colors font-mono">&lt;Contact/&gt;</a>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button id="mobile-menu-btn" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
+                        <i data-lucide="menu" class="h-6 w-6" id="menu-icon"></i>
+                        <i data-lucide="x" class="h-6 w-6 hidden" id="close-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-900 border-b border-green-500/30">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#about" class="text-gray-300 hover:text-green-400 block px-3 py-2 rounded-md text-base font-medium font-mono">About</a>
+                <a href="#skills" class="text-gray-300 hover:text-green-400 block px-3 py-2 rounded-md text-base font-medium font-mono">Skills</a>
+                <a href="#projects" class="text-gray-300 hover:text-green-400 block px-3 py-2 rounded-md text-base font-medium font-mono">Projects</a>
+                <a href="#contact" class="text-gray-300 hover:text-green-400 block px-3 py-2 rounded-md text-base font-medium font-mono">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="relative z-10">
+        <!-- Hero Section -->
+        <section class="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
+            <div class="absolute inset-0 z-0">
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/80 to-slate-900 z-10"></div>
+            </div>
+            
+            <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
+                <div class="mb-4 inline-flex items-center px-3 py-1 rounded-full border border-green-500/30 bg-green-500/10 backdrop-blur-sm">
+                    <span class="flex h-2 w-2 relative mr-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    <span class="text-green-400 text-xs font-mono tracking-wider">SYSTEM SECURE // ONLINE</span>
+                </div>
+
+                <h1 class="text-4xl md:text-7xl font-bold text-white mb-6 tracking-tight group">
+                    <div class="glitch-wrapper">
+                        <span class="relative z-10">CYBER SECURITY</span>
+                        <span class="glitch-clone red">CYBER SECURITY</span>
+                        <span class="glitch-clone cyan">CYBER SECURITY</span>
+                    </div>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-500">EXPERT</span>
+                </h1>
+                
+                <div class="text-xl md:text-2xl text-gray-300 mb-8 font-mono h-8">
+                    I am a <span id="typewriter" class="text-green-400"></span><span class="cursor-blink ml-1">_</span>
+                </div>
+
+                <p class="max-w-2xl text-gray-400 mb-10 text-lg">
+                    Protecting digital infrastructures from Dhaka to the global web. I specialize in offensive security, vulnerability assessment, and securing critical assets against modern threats.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#projects" class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-sm border-l-4 border-green-400 transition-all hover:scale-105 flex items-center justify-center shadow-[0_0_20px_rgba(34,197,94,0.3)]">
+                        <i data-lucide="terminal" class="w-5 h-5 mr-2"></i>
+                        VIEW OPERATIONS
+                    </a>
+                    <a href="#contact" class="px-8 py-3 bg-transparent border border-gray-600 hover:border-cyan-500 text-gray-300 hover:text-cyan-400 font-bold rounded-sm transition-all hover:scale-105 flex items-center justify-center">
+                        <i data-lucide="mail" class="w-5 h-5 mr-2"></i>
+                        INITIATE HANDSHAKE
+                    </a>
+                </div>
+
+                <!-- Decorative Grid Floor -->
+                <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-green-900/20 to-transparent pointer-events-none opacity-50" 
+                     style="transform: perspective(1000px) rotateX(12deg); background-image: linear-gradient(rgba(0, 255, 65, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 65, 0.1) 1px, transparent 1px); background-size: 40px 40px;">
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-20 bg-slate-900 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="reveal grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    
+                    <!-- Profile Visual -->
+                    <div class="relative group">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-green-600 to-cyan-600 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                        <div class="relative bg-slate-800 p-1 rounded-lg border border-slate-700">
+                             <div class="bg-slate-900 rounded aspect-square flex items-center justify-center overflow-hidden relative">
+                                 <div class="absolute inset-0 opacity-20" style="background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');"></div>
+                                 <div class="relative z-10 w-48 h-48 rounded-full border-4 border-green-500/20 flex items-center justify-center bg-slate-800 shadow-[0_0_30px_rgba(0,255,65,0.1)]">
+                                    <i data-lucide="shield" class="w-24 h-24 text-gray-400"></i>
+                                 </div>
+                                 <div class="absolute bottom-4 right-4 text-xs font-mono text-red-500 border border-red-500/30 bg-red-900/10 px-2 py-1 rounded">
+                                   LOC: BD_DHAKA
+                                 </div>
+                                 <div class="absolute top-4 left-4 text-xs font-mono text-green-500 border border-green-500/30 bg-green-900/10 px-2 py-1 rounded">
+                                   ID: 0x9A_USER
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
+
+                    <!-- About Content -->
+                    <div>
+                        <div class="flex items-center mb-6">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-red-500 mr-2"></i>
+                            <span class="text-gray-400 font-mono text-sm">DHAKA, BANGLADESH</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">
+                            Securing the Digital Frontier
+                        </h3>
+                        <p class="text-gray-400 mb-6 leading-relaxed">
+                            With a deep-rooted passion for technology born in the bustling tech hubs of Bangladesh, I have dedicated my career to the art of Cyber Security. I don't just find vulnerabilities; I understand the mindset of the attacker to build impenetrable defenses.
+                        </p>
+                        <p class="text-gray-400 mb-8 leading-relaxed">
+                            My methodology combines rigorous ethical hacking standards with creative problem-solving. Whether it's securing a fintech startup in Dhaka or auditing a global enterprise network, my goal remains the same: <span class="text-green-400 font-semibold">Zero Compromise.</span>
+                        </p>
+                        
+                        <div class="grid grid-cols-2 gap-4 font-mono text-sm">
+                            <div class="bg-slate-800/50 p-3 rounded border-l-2 border-green-500">
+                                <span class="block text-gray-500 text-xs uppercase">Experience</span>
+                                <span class="block text-white font-bold">5+ Years</span>
+                            </div>
+                            <div class="bg-slate-800/50 p-3 rounded border-l-2 border-green-500">
+                                <span class="block text-gray-500 text-xs uppercase">Projects</span>
+                                <span class="block text-white font-bold">100+ Secured</span>
+                            </div>
+                            <div class="bg-slate-800/50 p-3 rounded border-l-2 border-green-500">
+                                <span class="block text-gray-500 text-xs uppercase">Bug Bounties</span>
+                                <span class="block text-white font-bold">Top 10%</span>
+                            </div>
+                            <div class="bg-slate-800/50 p-3 rounded border-l-2 border-green-500">
+                                <span class="block text-gray-500 text-xs uppercase">Availability</span>
+                                <span class="block text-white font-bold">Freelance/Contract</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="py-20 bg-slate-900/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Section Title -->
+                <div class="mb-16 text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 relative inline-block">
+                        <span class="text-green-500 mr-2 font-mono">./</span>
+                        TECHNICAL ARSENAL
+                        <div class="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"></div>
+                    </h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto">A comprehensive toolkit for offensive and defensive operations.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Skill 1 -->
+                    <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-6 rounded-lg hover:border-green-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,65,0.05)] group">
+                        <div class="inline-flex p-3 rounded-lg bg-red-500 bg-opacity-10 mb-4 group-hover:scale-110 transition-transform">
+                            <i data-lucide="shield" class="w-6 h-6 text-red-500"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-4 font-mono">Offensive Security</h3>
+                        <ul class="space-y-2 text-gray-400 text-sm">
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Penetration Testing</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Red Teaming</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Social Engineering</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Vulnerability Assessment</li>
+                        </ul>
+                    </div>
+                    <!-- Skill 2 -->
+                    <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-6 rounded-lg hover:border-green-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,65,0.05)] group">
+                        <div class="inline-flex p-3 rounded-lg bg-blue-500 bg-opacity-10 mb-4 group-hover:scale-110 transition-transform">
+                            <i data-lucide="lock" class="w-6 h-6 text-blue-500"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-4 font-mono">Defensive Security</h3>
+                        <ul class="space-y-2 text-gray-400 text-sm">
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>SOC Operations</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Incident Response</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Hardening Systems</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Firewall Management</li>
+                        </ul>
+                    </div>
+                    <!-- Skill 3 -->
+                    <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-6 rounded-lg hover:border-green-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,65,0.05)] group">
+                        <div class="inline-flex p-3 rounded-lg bg-purple-500 bg-opacity-10 mb-4 group-hover:scale-110 transition-transform">
+                            <i data-lucide="globe" class="w-6 h-6 text-purple-500"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-4 font-mono">Web & Cloud</h3>
+                        <ul class="space-y-2 text-gray-400 text-sm">
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>OWASP Top 10</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>AWS Security</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>API Security</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Secure Code Review</li>
+                        </ul>
+                    </div>
+                    <!-- Skill 4 -->
+                    <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-6 rounded-lg hover:border-green-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,65,0.05)] group">
+                        <div class="inline-flex p-3 rounded-lg bg-yellow-500 bg-opacity-10 mb-4 group-hover:scale-110 transition-transform">
+                            <i data-lucide="code" class="w-6 h-6 text-yellow-500"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-4 font-mono">Malware Analysis</h3>
+                        <ul class="space-y-2 text-gray-400 text-sm">
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Reverse Engineering</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Static/Dynamic Analysis</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Sandbox Testing</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Threat Intelligence</li>
+                        </ul>
+                    </div>
+                    <!-- Skill 5 -->
+                    <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-6 rounded-lg hover:border-green-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,65,0.05)] group">
+                        <div class="inline-flex p-3 rounded-lg bg-green-500 bg-opacity-10 mb-4 group-hover:scale-110 transition-transform">
+                            <i data-lucide="server" class="w-6 h-6 text-green-500"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-4 font-mono">Network Security</h3>
+                        <ul class="space-y-2 text-gray-400 text-sm">
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Wireshark/Packet Analysis</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Network Mapping</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>VPN/IDS/IPS</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Protocol Analysis</li>
+                        </ul>
+                    </div>
+                    <!-- Skill 6 -->
+                    <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-6 rounded-lg hover:border-green-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,65,0.05)] group">
+                        <div class="inline-flex p-3 rounded-lg bg-cyan-500 bg-opacity-10 mb-4 group-hover:scale-110 transition-transform">
+                            <i data-lucide="terminal" class="w-6 h-6 text-cyan-500"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-4 font-mono">Scripting & Tools</h3>
+                        <ul class="space-y-2 text-gray-400 text-sm">
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Python & Bash</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Kali Linux Suite</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Metasploit</li>
+                            <li class="flex items-center"><i data-lucide="chevron-right" class="w-3 h-3 text-green-500 mr-2"></i>Burp Suite Pro</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="py-20 bg-slate-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-16 text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 relative inline-block">
+                        <span class="text-green-500 mr-2 font-mono">./</span>
+                        CLASSIFIED PROJECTS
+                        <div class="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"></div>
+                    </h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto">Selected case studies from recent security engagements.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Project 1 -->
+                    <div class="bg-slate-900 border border-slate-700 rounded-lg overflow-hidden hover:border-green-500/40 transition-all group">
+                        <div class="bg-slate-800 px-4 py-2 flex items-center justify-between border-b border-slate-700">
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 font-mono">root@kali:~/projects/fintech-core-audit</div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span class="text-green-500 text-xs font-mono tracking-wider uppercase mb-1 block">Penetration Testing</span>
+                                    <h3 class="text-xl font-bold text-white group-hover:text-green-400 transition-colors">FinTech Core Audit</h3>
+                                </div>
+                                <i data-lucide="external-link" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer"></i>
+                            </div>
+                            <div class="mb-4 font-mono text-sm text-gray-300 bg-slate-800/50 p-3 rounded border-l-2 border-yellow-500">
+                                <span class="text-green-500">$</span> ./execute-analysis<br/>
+                                <span class="text-gray-500 opacity-80">Executed black-box penetration test on a leading Bangladeshi mobile banking gateway.</span>
+                            </div>
+                            <div class="mb-4">
+                                <h4 class="text-sm font-semibold text-gray-400 mb-2 flex items-center">
+                                    <i data-lucide="activity" class="w-4 h-4 mr-2 text-cyan-500"></i> Impact Result
+                                </h4>
+                                <p class="text-sm text-gray-300">Identified and patched 3 Critical IDOR vulnerabilities preventing potential $50k+ daily fraud loss.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">Burp Suite</span>
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">Python</span>
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">OAuth2</span>
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">SQLMap</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 2 -->
+                    <div class="bg-slate-900 border border-slate-700 rounded-lg overflow-hidden hover:border-green-500/40 transition-all group">
+                        <div class="bg-slate-800 px-4 py-2 flex items-center justify-between border-b border-slate-700">
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 font-mono">root@kali:~/projects/ransomware-analysis</div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span class="text-green-500 text-xs font-mono tracking-wider uppercase mb-1 block">Malware Research</span>
+                                    <h3 class="text-xl font-bold text-white group-hover:text-green-400 transition-colors">Ransomware Analysis</h3>
+                                </div>
+                                <i data-lucide="external-link" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer"></i>
+                            </div>
+                            <div class="mb-4 font-mono text-sm text-gray-300 bg-slate-800/50 p-3 rounded border-l-2 border-yellow-500">
+                                <span class="text-green-500">$</span> ./execute-analysis<br/>
+                                <span class="text-gray-500 opacity-80">Reverse engineered a new strain of ransomware targeting healthcare institutions.</span>
+                            </div>
+                            <div class="mb-4">
+                                <h4 class="text-sm font-semibold text-gray-400 mb-2 flex items-center">
+                                    <i data-lucide="activity" class="w-4 h-4 mr-2 text-cyan-500"></i> Impact Result
+                                </h4>
+                                <p class="text-sm text-gray-300">Developed a decryption tool and released IOCs to the community, reducing recovery time by 60%.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">Ghidra</span>
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">x64dbg</span>
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">C++</span>
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">Sandbox</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 3 -->
+                    <div class="bg-slate-900 border border-slate-700 rounded-lg overflow-hidden hover:border-green-500/40 transition-all group">
+                        <div class="bg-slate-800 px-4 py-2 flex items-center justify-between border-b border-slate-700">
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 font-mono">root@kali:~/projects/govt-infrastructure-hardening</div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span class="text-green-500 text-xs font-mono tracking-wider uppercase mb-1 block">Network Security</span>
+                                    <h3 class="text-xl font-bold text-white group-hover:text-green-400 transition-colors">Govt Infrastructure Hardening</h3>
+                                </div>
+                                <i data-lucide="external-link" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer"></i>
+                            </div>
+                            <div class="mb-4 font-mono text-sm text-gray-300 bg-slate-800/50 p-3 rounded border-l-2 border-yellow-500">
+                                <span class="text-green-500">$</span> ./execute-analysis<br/>
+                                <span class="text-gray-500 opacity-80">Security architecture review for a regional government data center.</span>
+                            </div>
+                            <div class="mb-4">
+                                <h4 class="text-sm font-semibold text-gray-400 mb-2 flex items-center">
+                                    <i data-lucide="activity" class="w-4 h-4 mr-2 text-cyan-500"></i> Impact Result
+                                </h4>
+                                <p class="text-sm text-gray-300">Implemented Zero Trust architecture, reducing attack surface by 40% and ensuring compliance.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">Cisco ISE</span>
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">Palo Alto</span>
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">Splunk</span>
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">Linux Hardening</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 4 -->
+                    <div class="bg-slate-900 border border-slate-700 rounded-lg overflow-hidden hover:border-green-500/40 transition-all group">
+                        <div class="bg-slate-800 px-4 py-2 flex items-center justify-between border-b border-slate-700">
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 font-mono">root@kali:~/projects/automated-recon-tool</div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span class="text-green-500 text-xs font-mono tracking-wider uppercase mb-1 block">Tool Development</span>
+                                    <h3 class="text-xl font-bold text-white group-hover:text-green-400 transition-colors">Automated Recon Tool</h3>
+                                </div>
+                                <i data-lucide="external-link" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer"></i>
+                            </div>
+                            <div class="mb-4 font-mono text-sm text-gray-300 bg-slate-800/50 p-3 rounded border-l-2 border-yellow-500">
+                                <span class="text-green-500">$</span> ./execute-analysis<br/>
+                                <span class="text-gray-500 opacity-80">Custom Python tool for automating subdomain enumeration and port scanning.</span>
+                            </div>
+                            <div class="mb-4">
+                                <h4 class="text-sm font-semibold text-gray-400 mb-2 flex items-center">
+                                    <i data-lucide="activity" class="w-4 h-4 mr-2 text-cyan-500"></i> Impact Result
+                                </h4>
+                                <p class="text-sm text-gray-300">Reduced initial reconnaissance phase time by 75% for red team engagements.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">Python</span>
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">AsyncIO</span>
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">Nmap API</span>
+                                <span class="px-2 py-1 bg-slate-800 text-xs text-gray-400 rounded border border-slate-700 font-mono">Docker</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Certifications -->
+        <section class="py-16 bg-gradient-to-b from-slate-900 to-slate-800/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h3 class="text-2xl font-bold text-white mb-8 text-center font-mono">
+                    <span class="text-green-500">&gt;&gt;</span> CERTIFICATIONS_LOADED
+                </h3>
+                <div class="flex flex-wrap justify-center gap-6">
+                    <div class="flex items-center space-x-4 bg-slate-800 p-4 rounded-lg border border-slate-700 hover:border-green-500/50 transition-colors w-full sm:w-auto min-w-[250px]">
+                        <div class="p-3 bg-slate-900 rounded-full border border-slate-600">
+                            <i data-lucide="award" class="w-6 h-6 text-green-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold">OSCP</h4>
+                            <p class="text-gray-400 text-sm">Offensive Security | 2023</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4 bg-slate-800 p-4 rounded-lg border border-slate-700 hover:border-green-500/50 transition-colors w-full sm:w-auto min-w-[250px]">
+                        <div class="p-3 bg-slate-900 rounded-full border border-slate-600">
+                            <i data-lucide="shield" class="w-6 h-6 text-green-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold">CEH Master</h4>
+                            <p class="text-gray-400 text-sm">EC-Council | 2022</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4 bg-slate-800 p-4 rounded-lg border border-slate-700 hover:border-green-500/50 transition-colors w-full sm:w-auto min-w-[250px]">
+                        <div class="p-3 bg-slate-900 rounded-full border border-slate-600">
+                            <i data-lucide="lock" class="w-6 h-6 text-green-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold">CISSP</h4>
+                            <p class="text-gray-400 text-sm">ISC² | 2024</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4 bg-slate-800 p-4 rounded-lg border border-slate-700 hover:border-green-500/50 transition-colors w-full sm:w-auto min-w-[250px]">
+                        <div class="p-3 bg-slate-900 rounded-full border border-slate-600">
+                            <i data-lucide="award" class="w-6 h-6 text-green-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold">CompTIA Security+</h4>
+                            <p class="text-gray-400 text-sm">CompTIA | 2021</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 bg-slate-900 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-1/3 h-full bg-green-500/5 skew-x-12 pointer-events-none"></div>
+
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="mb-16 text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 relative inline-block">
+                        <span class="text-green-500 mr-2 font-mono">./</span>
+                        ESTABLISH UPLINK
+                        <div class="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"></div>
+                    </h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto">Secure communication channel ready. Messages are encrypted end-to-end.</p>
+                </div>
+
+                <div class="bg-slate-800/80 backdrop-blur-md p-8 rounded-lg border border-slate-700 shadow-2xl">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-6 font-mono">Contact Information</h3>
+                            <div class="space-y-6">
+                                <a href="#" class="flex items-center text-gray-400 hover:text-green-400 transition-colors group">
+                                    <i data-lucide="mail" class="w-5 h-5 mr-4 group-hover:animate-bounce"></i>
+                                    <span>expert@cyber-bd.security</span>
+                                </a>
+                                <a href="#" class="flex items-center text-gray-400 hover:text-green-400 transition-colors">
+                                    <i data-lucide="linkedin" class="w-5 h-5 mr-4"></i>
+                                    <span>/in/cyber-expert-bd</span>
+                                </a>
+                                <a href="#" class="flex items-center text-gray-400 hover:text-green-400 transition-colors">
+                                    <i data-lucide="github" class="w-5 h-5 mr-4"></i>
+                                    <span>/github/red-team-bd</span>
+                                </a>
+                                <div class="flex items-center text-gray-400">
+                                    <i data-lucide="map-pin" class="w-5 h-5 mr-4 text-red-500"></i>
+                                    <span>Dhaka, Bangladesh</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 p-4 bg-slate-900 rounded border border-green-500/20">
+                                <p class="text-xs font-mono text-green-500 mb-2">-----BEGIN PGP PUBLIC KEY BLOCK-----</p>
+                                <p class="text-xs text-gray-600 break-all font-mono">
+                                    mQINBF2... (Public Key Available on Request)
+                                </p>
+                                <p class="text-xs font-mono text-green-500 mt-2">-----END PGP PUBLIC KEY BLOCK-----</p>
+                            </div>
+                        </div>
+
+                        <form id="contact-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-mono text-gray-400 mb-1">ID (Name)</label>
+                                <input type="text" class="w-full bg-slate-900 border border-slate-700 rounded px-4 py-2 text-white focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all" placeholder="John Doe">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-mono text-gray-400 mb-1">Target (Subject)</label>
+                                <input type="text" class="w-full bg-slate-900 border border-slate-700 rounded px-4 py-2 text-white focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all" placeholder="Security Audit Inquiry">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-mono text-gray-400 mb-1">Payload (Message)</label>
+                                <textarea rows="4" class="w-full bg-slate-900 border border-slate-700 rounded px-4 py-2 text-white focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all" placeholder="Enter your secure message..."></textarea>
+                            </div>
+                            
+                            <button 
+                                id="submit-btn"
+                                type="submit" 
+                                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition-all flex items-center justify-center overflow-hidden relative"
+                            >
+                                <span class="btn-text relative z-10 flex items-center">TRANSMIT DATA <i data-lucide="wifi" class="w-4 h-4 ml-2"></i></span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-950 py-8 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex justify-center space-x-6 mb-4">
+                <i data-lucide="github" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer"></i>
+                <i data-lucide="linkedin" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer"></i>
+                <i data-lucide="globe" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer"></i>
+            </div>
+            <p class="text-gray-500 text-sm font-mono">
+                © <span id="year"></span> Cyber Security Expert BD. All systems operational.
+            </p>
+            <p class="text-xs text-gray-700 mt-2">
+                Designed with <span class="text-red-500">❤</span> and <span class="text-green-500">HTML5</span>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Footer Year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // --- Matrix Background Effect ---
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@%&<>?🇧🇩';
+        const fontSize = 14;
+        let columns = Math.floor(canvas.width / fontSize);
+        let drops = [];
+
+        function initMatrix() {
+            columns = Math.floor(canvas.width / fontSize);
+            drops = [];
+            for (let i = 0; i < columns; i++) {
+                drops[i] = 1;
+            }
+        }
+        initMatrix();
+        window.addEventListener('resize', initMatrix);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(10, 10, 20, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.font = `${fontSize}px monospace`;
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                
+                // Randomly make some characters "Bangladesh Red"
+                if (Math.random() > 0.98) {
+                    ctx.fillStyle = '#ff003c';
+                } else {
+                    ctx.fillStyle = '#00ff41'; // Cyber green
+                }
+
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 33);
+
+        // --- Typewriter Effect ---
+        const typeWriterElement = document.getElementById('typewriter');
+        const phrases = ['Penetration Tester.', 'Malware Analyst.', 'Security Researcher.', 'Digital Defender.'];
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let isWaiting = false;
+
+        function typeLoop() {
+            const currentPhrase = phrases[phraseIndex];
+            
+            if (isDeleting) {
+                typeWriterElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typeWriterElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                isWaiting = true;
+                setTimeout(() => {
+                    isDeleting = true;
+                    isWaiting = false;
+                }, 2000);
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+            }
+
+            const speed = isWaiting ? 100 : (isDeleting ? 50 : 100);
+            if(!isWaiting) setTimeout(typeLoop, speed);
+            else setTimeout(typeLoop, 2000);
+        }
+
+        setTimeout(typeLoop, 500);
+
+        // --- Navbar Toggle ---
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        const closeIcon = document.getElementById('close-icon');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+            if (menu.classList.contains('hidden')) {
+                menuIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            } else {
+                menuIcon.classList.add('hidden');
+                closeIcon.classList.remove('hidden');
+            }
+        });
+
+        // --- Navbar Scroll Effect ---
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-slate-900/90', 'backdrop-blur-md', 'border-b', 'border-green-500/30', 'shadow-[0_0_15px_rgba(0,255,65,0.1)]', 'bg-transparent');
+                navbar.classList.remove('bg-transparent');
+            } else {
+                navbar.classList.remove('bg-slate-900/90', 'backdrop-blur-md', 'border-b', 'border-green-500/30', 'shadow-[0_0_15px_rgba(0,255,65,0.1)]');
+                navbar.classList.add('bg-transparent');
+            }
+        });
+
+        // --- Scroll Reveal ---
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // --- Contact Form Animation ---
+        const form = document.getElementById('contact-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = submitBtn.querySelector('.btn-text');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Encrypting State
+            submitBtn.disabled = true;
+            submitBtn.classList.add('bg-slate-700', 'cursor-not-allowed');
+            submitBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+            btnText.innerHTML = '<span class="font-mono text-green-400 animate-pulse">ENCRYPTING & SENDING...</span>';
+            
+            // Sent State
+            setTimeout(() => {
+                btnText.innerHTML = '<span class="text-white flex items-center">TRANSMISSION COMPLETE <i data-lucide="shield" class="w-4 h-4 ml-2"></i></span>';
+                lucide.createIcons();
+                
+                // Reset
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('bg-slate-700', 'cursor-not-allowed');
+                    submitBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                    btnText.innerHTML = 'TRANSMIT DATA <i data-lucide="wifi" class="w-4 h-4 ml-2"></i>';
+                    lucide.createIcons();
+                    form.reset();
+                }, 3000);
+            }, 2000);
+        });
+
+    </script>
+</body>
+</html>
